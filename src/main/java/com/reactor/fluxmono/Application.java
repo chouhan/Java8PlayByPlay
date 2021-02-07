@@ -13,14 +13,14 @@ import reactor.core.publisher.Mono;
 //@SpringBootApplication
 public class Application {
 
-	public static void main(String[] args) {
-		SpringApplication app = new SpringApplication(Application.class);
-		app.setWebApplicationType(WebApplicationType.NONE);
-		app.run(args);
+    public static void main(String[] args) {
+        SpringApplication app = new SpringApplication(Application.class);
+        app.setWebApplicationType(WebApplicationType.NONE);
+        app.run(args);
 
-		GreetingWebClient gwc = new GreetingWebClient();
-		System.out.println(gwc.getResult());
-	}
+        GreetingWebClient gwc = new GreetingWebClient();
+        System.out.println(gwc.getResult());
+    }
 
 	/*@Bean
 	public CommandLineRunner myCommandLineRunner() {

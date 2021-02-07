@@ -10,19 +10,19 @@ import lombok.Setter;
 @Setter
 public class EmployeeDto {
 
-  @JsonProperty("id")
-  public String id;
+    @JsonProperty("id")
+    public String id;
 
-  @JsonProperty("employeeName")
-  public String employeeName;
+    @JsonProperty("employeeName")
+    public String employeeName;
 
-  @JsonProperty("employeeSalary")
-  public Long employeeSalary;
+    @JsonProperty("employeeSalary")
+    public Long employeeSalary;
 
-  @JsonProperty("employeeAge")
-  public Integer employeeAge;
+    @JsonProperty("employeeAge")
+    public Integer employeeAge;
 
-  @JsonProperty("profileImage")
-  public String profileImage;
+    @JsonProperty("profileImage")
+    public String profileImage;
 
 }

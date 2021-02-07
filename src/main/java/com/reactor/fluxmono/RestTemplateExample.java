@@ -20,6 +20,8 @@ import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 
 import javax.json.Json;
 import java.util.*;
@@ -34,13 +36,22 @@ public class RestTemplateExample implements CommandLineRunner {
 
     private String resourceUrl = "http://dummy.restapiexample.com/api/v1/employees";
 
-    public  static void main(String[] args){
+    WebClient webClient = WebClient
+            .builder()
+            .baseUrl("http://dummy.restapiexample.com")
+            .defaultCookie("cookieKey", "cookieValue")
+            .defaultHeader(HttpHeaders.CONTENT_TYPE, String.valueOf(MediaType.ALL))
+            .build();
+
+    WebClient webClient1 = WebClient.create("http://dummy.restapiexample.com");
+
+    public static void main(String[] args) {
         SpringApplication.run(RestTemplateExample.class, args);
     }
 
 
     @Bean
-    public RestTemplate getRestTemplate(){
+    public RestTemplate getRestTemplate() {
         RestTemplate restTemplate = new RestTemplate();
         List<HttpMessageConverter<?>> messageConverters = new ArrayList<>();
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
@@ -51,17 +62,17 @@ public class RestTemplateExample implements CommandLineRunner {
     }
 
     @Bean
-    public HttpHeaders getHttpHeaders(){
+    public HttpHeaders getHttpHeaders() {
         return new HttpHeaders();
     }
 
     @Bean
-    public HttpEntity<?> getHttpEntity(HttpHeaders httpHeaders){
+    public HttpEntity<?> getHttpEntity(HttpHeaders httpHeaders) {
         return new HttpEntity<>(httpHeaders);
     }
 
     @Bean
-    public ObjectMapper getObjectMapper(){
+    public ObjectMapper getObjectMapper() {
         return new ObjectMapper();
     }
 
@@ -85,12 +96,9 @@ public class RestTemplateExample implements CommandLineRunner {
         }*/
 
 
+        ResponseEntity<Employee[]> responseEntity = getRestTemplate().exchange(resourceUrl, HttpMethod.GET, getHttpEntity(getHttpHeaders()), Employee[].class);
 
-
-
-        /*ResponseEntity<Employee[]> responseEntity = getRestTemplate().exchange(resourceUrl, HttpMethod.GET, getHttpEntity(getHttpHeaders()), Employee[].class);
-
-        if(responseEntity.getStatusCode().equals(HttpStatus.OK)) {
+        if (responseEntity.getStatusCode().equals(HttpStatus.OK)) {
             Arrays.stream(responseEntity.getBody()).forEach(employee -> {
                 try {
                     EmployeeDto employeeDto = employeeMapper.employeeToEmployeeDto(employee);
@@ -101,7 +109,7 @@ public class RestTemplateExample implements CommandLineRunner {
             });
         } else {
             System.out.println("Error");
-        }*/
+        }
 
 
 
@@ -112,7 +120,10 @@ public class RestTemplateExample implements CommandLineRunner {
         PagedResources<Employee[]> storiesResources = response.getBody();
         Collection<Employee[]> stories = storiesResources.getContent();*/
 
-        ParameterizedTypeReference<RestResponsePage<Employee>> responseType = new ParameterizedTypeReference<RestResponsePage<Employee>>() { };
+
+        /// With Pagination
+
+        /*ParameterizedTypeReference<RestResponsePage<Employee>> responseType = new ParameterizedTypeReference<RestResponsePage<Employee>>() { };
 
         ResponseEntity<RestResponsePage<Employee>> result = getRestTemplate().exchange(resourceUrl, HttpMethod.GET, getHttpEntity(getHttpHeaders()), responseType);
 
@@ -125,7 +136,48 @@ public class RestTemplateExample implements CommandLineRunner {
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }
-        });
+        });*/
+
+
+        /// With WebClient
+
+        /*WebClient.UriSpec<WebClient.RequestBodySpec> requestBodySpecUriSpec =
+                webClient.method(HttpMethod.GET)
+                .exchange()
+                .block()
+                .bodyToMono(Employee.class)
+                .block();*/
+
+        /*webClient1.get().uri("/api/v1/employees").accept(MediaType.APPLICATION_JSON).exchange()
+                .map((response) -> {
+                            try {
+                                System.out.println(getObjectMapper().writeValueAsString(response));
+                                return response.bodyToMono(Employee.class);
+                            } catch (JsonProcessingException e) {
+                                e.printStackTrace();
+                                return null;
+                            }
+                        }
+                );*/
+
+
+        /*webClient
+                .get()
+                .uri("/api/v1/employees")
+//                .header("Authorization", "Basic " + Base64Utils
+//                        .encodeToString((username + ":" + token).getBytes(UTF_8)))
+                .retrieve()
+                .bodyToMono(Employee[].class)
+                .map( employee -> {
+                    try {
+                        System.out.println(getObjectMapper().writeValueAsString(employee));
+                        return employee;
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                        return null;
+                    }
+                });*/
+
     }
 
 }
